@@ -10,6 +10,7 @@
  * https://github.com/glamorous/Mailchimp-PHP-API/blob/master/mailchimp.php
  * https://github.com/glamorous
  *
+ * web hook
  * PHP Version 5
  *
  * @category Component
@@ -32,7 +33,6 @@ App::uses('HttpSocket', 'Network/Http');
  * @throws  Exception
  */
 class MailChimpComponent extends Component {
-
 	const JSON = 'json';
 	const XML = 'xml';
 	const PHP = 'php';
@@ -64,12 +64,24 @@ class MailChimpComponent extends Component {
  *
  * @throws Exception
  */
-	public function listSubscribe($listId, $params) {
-		$params['id'] = $listId;
-		$selectionMethod = Configure::read('Chimp.lists_subscribe');
+    public function listSubscribe($listId, $params) {
 
-		return $this->__makeCall($params, $selectionMethod);
-	}
+        if ($listId == '' || empty($listId)) {
+            throw new Exception(
+                __("List id is empty")
+            );
+        }
+        if (!in_array("email", $params)) {
+            throw new Exception(
+                __("Email is empty")
+            );
+        }
+
+        $params['id'] = $listId;
+        $selectionMethod = Configure::read('Chimp.lists_subscribe');
+
+        return $this->__makeCall($params, $selectionMethod);
+    }
 
 /**
  * Set api key for sending a request
